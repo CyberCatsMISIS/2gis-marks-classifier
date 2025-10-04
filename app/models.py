@@ -1,18 +1,15 @@
 import pickle
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.multioutput import MultiOutputClassifier
+with open("app/marks_classifier.pkl", "rb") as f:
+    model_data = pickle.load(f)
 
-# Заглушка: пример обученной модели
-vectorizer = CountVectorizer()
-clf = MultiOutputClassifier(RandomForestClassifier())
+vectorizer = model_data["vectorizer"]
+clf = model_data["classifier"]
+tag_list = model_data["tags"]
 
 
-# Функция предсказания тегов
 def predict_tags(text: str):
-    X = vectorizer.transform([text])
-    # Заменить на реальные метки
-    y_pred = clf.predict(X)
-    # Преобразовать в список строк
-    return ["tag1", "tag2"]  # заглушка
+    X_new = vectorizer.transform([text])
+    y_pred = clf.predict(X_new)[0]
+    predicted_tags = [tag_list[i] for i, val in enumerate(y_pred) if val == 1]
+    return predicted_tags
